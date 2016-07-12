@@ -1,0 +1,61 @@
+Networked Hello World
+
+
+(Note: this is the project that the syllabus and schedule refer to as the "introductory project")
+
+Assignment Instructions
+
+This assignment must be coded in C or C++ and must compile and run on Linux.
+
+For this assignment, you will create a networked Hello World application. It will consist of a client and a server, where the client takes a string from the command line and sends it to the server, then the server prints that string to standard output (followed by a \n).  The server will take one argument on the command line: the port to listen for client connections on.  The client will take three arguments: the server's IP address, the port to connect to (this should match the value given on the server's command line), and the message to print.  For example:
+
+./tcp_server 30000
+./tcp_client 123.231.132.213 30000 "Hello World"
+
+(Note that in order to provide a string containing spaces as a single command line parameter, you have to put quotes around it.)
+
+The server would then print:
+Hello World
+(note that this ends in a '\n' newline)
+
+You will be provided with some starter code that will parse the command line parameters for you.  A convenient Makefile is included as well.  (To uncompress the file, use the command: tar zxf helloworld.tar.gz)  Your job is to add the network code...  the exact protocol is up to you to design, but as the task is very simple, the protocol should be as simple as possible too.  (Even so, there are at least two equally valid and very simple options...)  Also note that the server does not necessarily have to respond to the client after it finishes printing the message (although you may implement that if you wish).
+
+Normally, you would be asked to implement the client and server using both TCP and UDP, for a total of 4 programs...  However, due to the compressed timeframe of the summer semester also compressing the time available for this project, you only need to implement the TCP version.  However, if you do have time, we encourage you to try doing UDP too (starter code for that is provided as well), although we will only be grading the TCP version.
+
+To help you with this assignment, please refer to the following man pages:
+
+man 7 ip
+man 7 tcp
+man 7 udp
+
+man 2 socket
+man 2 bind
+man 2 listen
+man 2 accept
+man 2 connect
+
+man 2 send (for send and sendto)
+man 2 recv (for recv and recvfrom)
+
+man 3 inet (for inet_aton and inet_ntoa - note: do NOT use inet_addr or inet_network)
+man 3 byteorder (for htons, htonl, ntohs, and ntohl)
+
+You are NOT required to use gethostbyname in this project (assume the client will be given an IP address, and not a host name on the command line), but you will need to use it in the next project, so you can take a look now if you like.  It's man page is:
+
+man 3 gethostbyname
+
+When you have completed the assignment, compress all your source code and the Makefile that builds it on Linux systems into a tarball archive (similar to the one attached to this assignment).  The submit the assignment on T-Square, attaching the tarball file to your submission.  You can create the archive file with this command:
+tar zcf helloworld.tar.gz [list of files / directories to include]
+
+You can verify which files have been successfully added to the archive with:
+tar ztf helloworld.tar.gz
+
+
+The 5 points of this project will be assigned as follows:
+1 pts - completed code for TCP server and client
+1 pts - TCP server and client successfully connect to each other over the network
+1 pts - TCP server successfully prints a message to stdout that was given to the client on the command line
+1 pt  - handle send and recv correctly
+0.25 pt  - correct byte-order usage
+0.5 pt  - error checking & handling
+0.25 pt  - readability and comments (please be sure your code is reasonably understandable, realizing that someone else has to read and understand it)

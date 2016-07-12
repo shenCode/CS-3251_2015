@@ -1,0 +1,105 @@
+To compile:
+
+	make
+
+To run:
+
+	./web_client <URL>
+	
+	example: ./web_cilent http://www.google.com
+
+	or
+
+	./web_client http://192.128.0.1
+
+	Note: make sure there is no "/" at the end.
+
+	Use ./web/client <URL> > FILENAME to save it to a file.
+
+	example: ./web_client http://www.google.com > google.html
+
+Technical challenges:
+
+	Splitting the header and body (Googled on str cat and split)
+	Building query (Referred to book)
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+Instructions
+HTTP Client and Server
+
+
+As with all labs in this course, you must write your code in C or C++ and it must compile and run on Linux systems (Note: MacOS is not Linux). Feel free to use any parts of the STL (Standard Template Library) and/or Boost library that you find helpful except for the networking parts - you should use the Posix Sockets (C/C++ functions) that we discussed in class. We'll also use a compiler that's compatible with the C++11 language specification, so you're welcome to use any of the new language features if you like. (It is backwards compatible, so you're also welcome to stick to the previous C or C++ language standards if you prefer.) This is an individual project; you must write all code that you submit yourself.
+
+
+Objective
+
+In this project, you will be programming a simple HTTP client and simple HTTP web server. Not only will the client be able to request documents from the server you write, but it will also be able to request documents from any HTTP web server on the internet. Not only will your server be able to respond to requests from the client you write, but also from any HTTP web browser (e.g. Firefox, IE, Chrone, Safari, etc.), within a limited set of request types. You can use your TCP code from the previous assignment as a starting point, although you may want to rename the programs from tcp_client/server to http_client/server, web_client/server, or something like that.
+
+This assignment will be done in two parts. For the first part (this assignment) you will just create the HTTP client (browser). You will get a grade out of 7 pts. (whereas the total project is worth 15 pts.) because it is only half the project. For the second part, you will implement the HTTP web server. As a checkpoint during the second part, you will get feedback on both your client and server, and you will submit updated versions of both for the thrid and final part. More detail on the feedback process will be explained in the second part - for now, you may focus on creating your HTTP client.
+
+HTTP Client
+
+In this part of this assignment you will program and turn in a simple HTTP web client. It will take a single command line parameter, which is the URL of a web document to request, then it will send an HTTP GET request, receive the response, and print the document to standard output. Examples of the command are:
+
+./web_client http://www.cc.gatech.edu/~davel/classes/cs3251/index.html
+./web_client http://www.cc.gatech.edu/~davel/classes/cs3251/
+./web_client http://www.cc.gatech.edu/~davel/classes/cs3251
+./web_client http://www.cc.gatech.edu
+Remember that there can also be an optional port parameter in a URL. If it is specified, you should use that port to connect to the web server. Otherwise, use the default port 80. You may find this useful for testing and debugging, since your server needs root priviledges (i.e., run with sudo) to accept connections on port 80. Here is an example of a URL with a specified port:
+./web_client http://mta1.greightinfo4u.net:8080/index.html (Note: This is just a random public site I found that uses port 8080. I do not endorse whatever service they may be offering there.)
+It's also possible to type an IP address directly into a URL. You may find this useful for testing and debugging as well, if you don't have a server machine available that has a registered host name. For example:
+./web_client http://130.207.160.29/index.html
+There are a number of ways to parse text in C and C++. For char* strings, I find sscanf() is easy to use, but you can also use strtok() if you prefer. In C++ you can also use the STL std::string object, which provides some differnet functionality. Please refer to the following documentation:
+man 3 sscanf
+
+man 3 strtok
+
+basic_string
+
+string - C++ Reference
+
+I have also attached some help code for parsing URLs. You aren't required to use it, but it may save you a little effort on this part, so it's encouraged.
+
+You will also need to get the server's IP address using its domain name. The gethostbyname() function will take a domain name, invoke the DNS protocol for you to look up the server's IP address, and return that address in network byte order (so you do not need to use htonl() on the result). The h_addrtype field in the result structure tells you the network protocol being used, and the h_length field tells you the size (in bytes) of the network address. So those should be AF_INET and 4 (bytes), respectively, since we're using IP. The h_addr_list field is an array of pointers to byte arrays, each of which contains an IP address for the domain name. (It is possible, though uncommon, for more than one to be returned. 99% of the time, you can just use the first one, i.e. h_addr_list[0], anyway.) If gethostbyname() is passed an IP address in human-readable string form, instead of a domain name, it will simply convert it to network-byte-order binary form for you. So you don't really have to worry about whether you're passing gethostbyname() a domain name or an IP address. You can find further documentation here:
+
+man 3 gethostbyname
+Once you've parsed the URL, you'll need to create an HTTP GET request and send it to the server. You should include "Host" and "Connection" header fields, using the "Connection" field to specify non-persistent connections since the program will terminate after a single request anyway. Any other header fields you want to specify are up to you. You should print your GET request to standard error.
+
+After sending the GET request, you need to receive the response from the server. Print the response header to standard error and the response body (if there is one) to standard output. That way you can create a file whose contents are the same as the original document by redirecting standard output like this:
+
+./web_client http://www.cc.gatech.edu/sites/all/themes/cc_2012/images/getsocial.jpg > getsocial.jpg
+Any other output you want in your program is fine, so long as you print it to standard error. So the only output that should ever be printed to standard out is the response body. (This is necessary for the output redirection to work as intended.) You've now completed a simple web client! It should work not only with the server you are writing, but also with any standard HTTP web server on the internet. Choose a URL and give it a try!
+Of course commercial web browsers provide a variety of additional functionality. Here are some additional features that are standard in commercial web browsers, but that you do not need to implement for the assignment:
+Parse HTML files
+Automatically retrieve (with GET requests) any objects on the page, such as images
+Render the page in a GUI window
+Maintain a local web cache
+Support cookies
+Support JavaScript, Flash, etc.
+
+Submission Instructions
+
+You must submit the following:
+All your source code (written in C or C++)
+Makefile that builds your client on Linux
+README (plaintext) file describing the following:
+how to compile and run your web client
+any technical challenges you faced and how you overcame them
+To submit, create a tarbell (.tar.gz) archive file. Then upload it to your assignment submission here. Recall that the command to create a tarball archive is:
+
+tar zcvf web_client.tar.gz [list of file/directories to include]
+
+Grading
+
+Your grade will consist of the following: 
+
+1 pt. for submiting substantial code that shows a good effort attempting all aspects/functionality of the project
+1 pt. for the feedback process (details to be explained later)
+again, it is important to attempt all parts, even if all the functionality and the following points awards are not fully achieved, so that we have something substantial enough to give useful feedback on
+5 pts. HTTP Client, broken down as follows:
+1 pt. - creating a correct HTTP GET request and printing it to stderr
+1.5 pts. - sending the HTTP request to the server, and receiving the response
+0.5 pts. - printing the response header to stderr
+1 pt. - printing the response body (and nothing else) to stdout
+1 pt. - for working correctly both with your server, and any standard HTTP server out on the internet

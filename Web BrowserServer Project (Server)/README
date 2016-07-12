@@ -1,0 +1,73 @@
+To compile:
+
+	make
+
+To run:
+
+	./web_server <PORT_NUMBER>
+	Default Port number is 80 if <PORT_NUMBER> is not provided.
+	The home directory is ./home
+
+	./web_cient http://localhost:<PORT_NUMBER>
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+As with all labs in this course, you must write your code in C or C++ and it must compile and run on Linux systems (Note: MacOS is not Linux). Feel free to use any parts of the STL (Standard Template Library) and/or Boost library that you find helpful except for the networking parts - you should use the Posix Sockets (C/C++ functions) that we discussed in class. We'll also use a compiler that's compatible with the C++11 language specification, so you're welcome to use any of the new language features if you like. (It is backwards compatible, so you're also welcome to stick to the previous C or C++ language standards if you prefer.) This is an individual project; you must write all code that you submit yourself.
+
+
+Objective
+
+In this project, you will be programming a simple HTTP client and simple HTTP web server. Not only will the client be able to request documents from the server you write, but it will also be able to request documents from any HTTP web server on the internet. Not only will your server be able to respond to requests from the client you write, but also from any HTTP web browser (e.g. Firefox, IE, Chrone, Safari, etc.), within a limited set of request types. You can use your TCP code from the pre-lab as a starting point, although you may want to rename the programs from tcp_client/server to http_client/server, web_client/server, or something like that.
+ 
+
+HTTP Server
+
+Now you will implement a simple web server. It will take one optional command line argumnet, the port number to listen for incoming TCP connections on. If the argument is not specified, use the default port 80. For example:
+
+./web_server 8080
+./web_server
+The web server will accept connections from clients on that port, receive HTTP GET requests, and then respond to them. Since this is a simple web server, it only needs to handle GET requests, it does not need to handle clients concurrently, and it need only support non-persistent connections. It also doesn't need to support cookies, and it can respond to conditional GET requests (i.e. "If-Modified-Since") by simply providing the document every time, even if it was not modified (i.e., you can ignore the "If-Modified-Since" field).
+
+After your server has finished handling a client request, it should close the TCP connection and then loop back to accept a new client connection and handle its request. Although real servers do something a little more sophisticated, it's okay for this assignment to simply make that an infinite loop. (Just don't do anything in your code that would prevent a SIGKILL signal, i.e. Ctrl-C, from terminating your program.)
+Your server should use a directory as the document root (which you can hard code into your program, as a relative path - do not hard code an absolute path). Documents can be placed in this directory, or subdirectories from there, in order for the server to be able to serve them. The URL path to a document will be the file's path relative to the document root directory. For example, if your server program is at /home/davel/web_server and the document root is web_root then the URL http://my.server.com/foo/bar.html would retrieve the file at /home/davel/web_server/web_root/foo/bar.html
+
+If a URL indicates a directory (e.g. http://my.server.com/foo/, http://my.server.com/foo, or http://my.server.com), then look for a file named "index.html" in that directory. If there is no "index.html" at that location, then you may treat it the same as any file not found.
+
+Here is a good list of HTTP status codes. Of course you will , and ".gif"use "200 OK" when you successfully return a document. "404 Not Found" should be returned if the file does not exist (e.g. there is no file /home/davel/web_server/web_root/foo/bar.html), "400 Bad Request" can be used if the HTTP request is malformed (e.g. you have an error in parsing it), "501 Not Implemented" should be returned if you get a request you cannot handle (e.g. an HTTP request that is not a GET), and "500 Internal Server Error" can be used for miscelaneous problems that you can't find a better status code for. You should return something for every request you receive; no request should go unanswered (not even a bad request).
+
+Your HTTP response should include the "Connection" header field to indicate the server is using a non-persistent connection. (You may do so regardless of the connection type the client requested.) You should also include the "Date" field in every response. In a successful response (i.e. that has a body) you must also include the "Last-Modified", "Content-Length", and "Content-Type" headers. See the textbook for examples of the correct date/time format for the "Date" and "Last-Modified" fields. You can use the stat() function to get the file size and time of last modification for a file:
+
+man 2 stat
+To determine the content type of a file, you may simply examine the file extension. You should support, at a minimum, ".txt", ".html", ".htm", ".jpeg", and ".jpg", but may add other extensions if you wish. A thorough (but probably not entirely complete) list of content types, and their file extensions, can be found here.
+
+Submission Instructions
+
+You must submit the following:
+All your source code (written in C or C++)
+Makefile that builds your server on Linux
+At least two sample files for your web server to serve, already placed in the correct root directory (or subdirectory of root)
+README (plaintext) file describing the following:
+how to compile and run your web server
+the document root directory where I can place files for your server to serve
+the two sample files you provided (their names & locations)
+any technical challenges you faced and how you overcame them
+To submit, create a tarbell (.tar.gz) archive file. Then upload your assignment submission on T-Square. Recall that the command to create a tarball archive is:
+
+tar zcvf web_server.tar.gz [list of file/directories to include]
+
+Grading
+
+Your grade will consist of the following:
+1 pt. for submiting substantial code that shows a good effort attempting all aspects/functionality of the project
+1 pt. for the feedback process (details to be explained later)
+again, it is important to attempt all parts, even if all the functionality and the following points awards are not fully achieved, so that we have something substantial enough to give useful feedback on
+6 pts. HTTP Server, broken down as follows:
+1.5 pt. - receiving and parsing the HTTP request from the client
+0.5 pts. - retrieving the correct file that is indicated in the GET request
+0.5 pts. - getting the necessary file metadata, such as last-modified time, content-length, and content-type
+1.5 pt. - creating a correct HTTP response that includes the last-modified time, content-length, content-type, and file content
+1 pt. for correct header (incl. content-* fields), 0.5 pts. for correct body/payload
+0.5 pts. - returning appropriate status codes for common errors (e.g. "404 Not Found" and "501 Not Implemented")
+0.5 pts. - sending the response to the client
+1 pt. - preparing to accept a new client connection, after completing handling of the previous one

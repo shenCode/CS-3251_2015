@@ -1,0 +1,11 @@
+To compile:
+
+	make
+
+To run:
+
+	./web_server <PORT_NUMBER>
+	Default Port number is 80 if <PORT_NUMBER> is not provided.
+	The home directory is ./home
+
+	./web_cient http://localhost:<PORT_NUMBER>
